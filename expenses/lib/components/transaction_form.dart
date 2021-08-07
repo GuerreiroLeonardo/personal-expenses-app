@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 
-class TransactionForm extends StatelessWidget {
-  final titleController = TextEditingController();
-  final valueController = TextEditingController();
-
+class TransactionForm extends StatefulWidget {
   final void Function(String, double) onSubmit;
 
   TransactionForm(this.onSubmit);
+
+  @override
+  _TransactionFormState createState() => _TransactionFormState();
+}
+
+class _TransactionFormState extends State<TransactionForm> {
+  final titleController = TextEditingController();
+
+  final valueController = TextEditingController();
+
+  _submitForm() {
+    final title = titleController.text;
+    final value = double.tryParse(valueController.text) ?? 0.0;
+    if (title.isEmpty || value <= 0) {
+      return;
+    }
+    widget.onSubmit(title, value);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,6 +33,7 @@ class TransactionForm extends StatelessWidget {
             child: Column(
               children: <Widget>[
                 TextField(
+                  onSubmitted: (_) => _submitForm(),
                   controller: titleController,
                   // onChanged: (newValue) => {title = newValue},
                   decoration: InputDecoration(
@@ -25,6 +41,8 @@ class TransactionForm extends StatelessWidget {
                   ),
                 ),
                 TextField(
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  onSubmitted: (_) => _submitForm(),
                   controller: valueController,
                   // onChanged: (newValue) => {value = newValue},
                   decoration: InputDecoration(
@@ -35,15 +53,10 @@ class TransactionForm extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
                     ElevatedButton(
-                      onPressed: () {
-                        final title = titleController.text;
-                        final value =
-                            double.tryParse(valueController.text) ?? 0.0;
-                        onSubmit(title, value);
-                      },
+                      onPressed: _submitForm,
                       child: Text("Nova Transação"),
                       style: ElevatedButton.styleFrom(
-                          primary: Colors.white, onPrimary: Colors.purple),
+                          primary: Colors.blue[100], onPrimary: Colors.purple),
                     ),
                   ],
                 )
